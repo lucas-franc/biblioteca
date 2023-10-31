@@ -12,21 +12,24 @@ CREATE TABLE Livros (
 );
 ```
 ## Tabela de Autores
+```
 CREATE TABLE Autores (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(255) NOT NULL,
     DataNascimento DATE,
     Nacionalidade VARCHAR(255)
 );
-
+```
 ## Tabela de Editoras
+```
 CREATE TABLE Editoras (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(255) NOT NULL,
     Endereco VARCHAR(255)
 );
-
+```
 ## Tabela de Empréstimos
+```
 CREATE TABLE Emprestimos (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     DataEmprestimo DATE NOT NULL,
@@ -38,15 +41,17 @@ CREATE TABLE Emprestimos (
     FOREIGN KEY (LivroID) REFERENCES Livros(ID),
     FOREIGN KEY (ClienteID) REFERENCES Clientes(ID)
 );
-
+```
 ## Tabela de Clientes
+```
 CREATE TABLE Clientes (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(255) NOT NULL,
     Idade INT
 );
-
+```
 ## Tabela de Relacionamentos 
+```
 CREATE TABLE LivrosAutores (
     LivroID INT,
     AutorID INT,
@@ -54,9 +59,10 @@ CREATE TABLE LivrosAutores (
     FOREIGN KEY (LivroID) REFERENCES Livros(ID),
     FOREIGN KEY (AutorID) REFERENCES Autores(ID)
 );
-
+```
 
 ## Stored Procedure para registrar um novo empréstimo
+```
 DELIMITER //
 CREATE PROCEDURE RegistrarEmprestimo (
     IN LivroID INT,
@@ -82,26 +88,29 @@ BEGIN
 END;
 //
 DELIMITER ;
-
+```
 
 ## View para mostrar livros disponíveis para empréstimos 
+```
 CREATE VIEW LivrosDisponiveis AS
 SELECT L.ID, L.Titulo, L.ISBN, L.AnoPublicacao
 FROM Livros L
 LEFT JOIN Emprestimos E ON L.ID = E.LivroID
 WHERE E.ID IS NULL OR (E.StatusEmprestimo = 'devolvido' AND L.ID NOT IN (SELECT LivroID FROM Emprestimos WHERE StatusEmprestimo = 'pendente' OR 'atrasado'));
-
+```
 
 
 ## View para fornecer lista de todos os empréstimos atuais 
+```
 CREATE VIEW ListaEmprestimos AS
 SELECT E.ID AS EmprestimoID, C.Nome AS Cliente, L.Titulo AS Livro, E.DataEmprestimo, E.DataDevolucaoDeterminada, E.DataDevolucaoCliente, E.StatusEmprestimo
 FROM Emprestimos E
 JOIN Clientes C ON E.ClienteID = C.ID
 JOIN Livros L ON E.LivroID = L.ID;
-
+```
 
 ## Trigger para definir o status do empréstimo no momento do registro
+```
 DELIMITER //
 CREATE TRIGGER UpdateStatusAtrasado
 BEFORE INSERT ON Emprestimos
@@ -113,9 +122,10 @@ BEGIN
 END;
 //
 DELIMITER ;
-
+```
 
 ## Inserindo dados
+```
 INSERT INTO Livros (Titulo, ISBN, AnoPublicacao, EditoraID)
 VALUES
     ('Livro 1', 'ISBN1', 1999, 1),
@@ -265,8 +275,9 @@ VALUES
     ('2024-06-30', '2024-07-14', "pendente", 18, 18),
     ('2024-07-05', '2024-07-19', "pendente", 19, 19),
     ('2024-08-10', '2024-08-24',  "pendente",20, 20);
-
+```
 ## Registrando empréstimos com Stored Procedure
+```
 call RegistrarEmprestimo(25,1, "2024-03-20");
 call RegistrarEmprestimo(26, 2, "2024-03-20")
-
+```
